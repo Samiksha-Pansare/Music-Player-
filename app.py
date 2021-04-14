@@ -9,10 +9,10 @@ app = Flask(__name__)
 
 db = SQLAlchemy(app)
 
-# login_manager = LoginManager()
-# login_manager.init_app(app)
-# login_manager.login_view = 'login'
-# login_manager.login_message = "You need to Login first"
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+login_manager.login_message = "You need to Login first"
 
 app.config['SECRET_KEY'] = os.urandom(24)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///MusicPlayer.db'
@@ -41,65 +41,63 @@ class Likes(db.Model):
     song_id = db.Column(db.Integer, db.ForeignKey(Songs.id))
     like = db.Column(db.Integer, default=0)
 
+@login_manager.user_loader
+def load_user(user_id):
+    return Users.query.get(int(id))
 
-# @login_manager.user_loader
-# def load_user(user_id):
-#     return Users.query.get(int(user_id))
+
+@app.route('/signUp', methods=['GET', 'POST'])
+def signUp():
+    if request.method == "POST":
+        username = request.form['username']
+        password = request.form['password']
+        hashed_password = generate_password_hash(password, method="sha256")
+        cpassword = request.form['cpassword']
+        mail_id = request.form['mail_id']
 
 
-# @app.route('/signUp', methods=['GET', 'POST'])
-# def signUp():
-#     if request.method == "POST":
-#         username = request.form['username']
-#         password = request.form['password']
-#         hashed_password = generate_password_hash(password, method="sha256")
-#         cpassword = request.form['cpassword']
-#         email = request.form['email']
+        user = Users.query.filter_by(username=username).first()
+        if user:
+            flash("User Name Already Exists, Choose Different", "warning")
+            return redirect("/signUp")
+        if(password == cpassword):
+            new_user = Users(username=username, password=hashed_password,mail_id=mail_id)
+            db.session.add(new_user)
+            # message = "You have been succesfully registered in the Music Player!\nThank You For Registering."
+            # server = smtplib.SMTP("smtp.gmail.com", 587)
+            # server.starttls()
+            # server.login("studentrepository20@gmail.com", "studentrepo")
+            # server.sendmail("studentrepository20@gmail.com", email, message)
+            db.session.commit()
+            flash("Sucessfully Registered!", "success")
+            return redirect('/login')
+        else:
+            flash("Passwords don't match", "danger")
+            return redirect("/signUp")
 
-#         mentor = Mentor.query.filter_by(username=mentorname).first()
-#         user = Student.query.filter_by(rollno=rollno).first()
-#         if user:
-#             flash("User with the Roll No. Already Exists", "warning")
-#             return redirect("/signUp")
-#         if(password == cpassword):
-#             new_user = Student(fname=fname, rollno=rollno, password=hashed_password,
-#                                email=email, mobno=mobno, mentor=mentor)
-#             db.session.add(new_user)
-#             message = "You have been succesfully registered in the Student Repository!\nThank You For Registering."
-#             server = smtplib.SMTP("smtp.gmail.com", 587)
-#             server.starttls()
-#             server.login("studentrepository20@gmail.com", "studentrepo")
-#             server.sendmail("studentrepository20@gmail.com", email, message)
-#             db.session.commit()
-#             flash("Sucessfully Registered!", "success")
-#             return redirect('/login')
-#         else:
-#             flash("Passwords don't match", "danger")
-#             return redirect("/signUp")
+    return render_template("sign-up.html")
 
-#     return render_template("signUp.html")
+@app.route('/login', methods=['POST', 'GET'])
+def login():
+    if request.method == "POST":
+        username = request.form['username']
+        password = request.form['password']
 
-# @app.route('/login', methods=['POST', 'GET'])
-# def login():
-#     if request.method == "POST":
-#         username = request.form['username']
-#         password = request.form['password']
+        user = Users.query.filter_by(username=username).first()
 
-#         user = Student.query.filter_by(username=username).first()
+        if not user:
+            flash("No such User found, Try Signing Up First", "warning")
+            return redirect("/signUp")
 
-#         if not user:
-#             flash("No such Student found, Try Signing Up First", "warning")
-#             return redirect("/signUp")
+        if user:
+            if check_password_hash(user.password, password):
+                login_user(user)
+                return currentuser.username
+            else:
+                flash("Incorrect password", "danger")
+                return redirect("login")
 
-#         if user:
-#             if check_password_hash(user.password, password):
-#                 login_user(user)
-#                 return redirect(url_for("home", currentuser=current_user))
-#             else:
-#                 flash("Incorrect password", "danger")
-#                 return redirect("login")
-
-#     return render_template("login.html")
+    return render_template("log-in.html")
 
 
 @app.route('/')
