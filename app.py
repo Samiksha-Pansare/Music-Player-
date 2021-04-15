@@ -32,11 +32,11 @@ class Songs(db.Model):
     liked = db.relationship('Likes', backref='Songs')
 
 
-class Users(db.Model):
+class Users(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(15), nullable=False)
+    username = db.Column(db.String(15), nullable=False, unique=True)
     password = db.Column(db.String(15), nullable=False)
-    mail_id = db.Column(db.String(15), nullable=False)
+    mail_id = db.Column(db.String(15), nullable=False, unique=True)
     likes = db.relationship('Likes', backref='Users')
 
 
@@ -69,12 +69,14 @@ def signup():
             new_user = Users(username=username,
                              password=hashed_password, mail_id=mail_id)
             db.session.add(new_user)
+            db.session.commit()
+
             # message = "You have been succesfully registered in the Music Player!\nThank You For Registering."
             # server = smtplib.SMTP("smtp.gmail.com", 587)
             # server.starttls()
             # server.login("studentrepository20@gmail.com", "studentrepo")
             # server.sendmail("studentrepository20@gmail.com", email, message)
-            db.session.commit()
+
             flash("Sucessfully Registered!", "success")
             return redirect('/login')
         else:
@@ -102,12 +104,19 @@ def login():
         if user:
             if check_password_hash(user.password, password):
                 login_user(user)
-                return currentuser.username
+                return current_user.username
             else:
                 flash("Incorrect password", "danger")
                 return redirect("login")
 
     return render_template("log-in.html")
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return "<h1>User Logged out</h1>"
 
 
 @app.route('/')
