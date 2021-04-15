@@ -1,5 +1,7 @@
 :root,
-input[type="text"] {
+input[type="text"],
+input[type="password"],
+input[type="email"] {
   font-size: 20px;
   font-family: "Chivo";
 }
@@ -19,50 +21,76 @@ body {
   position: relative;
 }
 
-input[type="text"] {
+input[type="text"],
+input[type="password"],
+input[type="email"] {
   padding: 1em;
   border: none;
   border-radius: 0.2em;
   background: gray;
   transition: background 0.3s;
 }
-input[type="text"]:focus {
+input[type="text"],
+input[type="password"],
+input[type="email"]:focus {
   background: white;
 }
-input[type="text"]::-moz-placeholder {
+input[type="text"],
+input[type="password"],
+input[type="email"]::-moz-placeholder {
   color: rgba(0, 0, 0, 0.5);
 }
-input[type="text"]:-ms-input-placeholder {
+input[type="text"],
+input[type="password"],
+input[type="email"]:-ms-input-placeholder {
   color: rgba(0, 0, 0, 0.5);
 }
-input[type="text"]::placeholder {
+input[type="text"],
+input[type="password"],
+input[type="email"]::placeholder {
   color: rgba(0, 0, 0, 0.5);
 }
 
-input[type="text"]:focus + .ghost {
+input[type="text"],
+input[type="password"],
+input[type="email"]:focus + .ghost {
   background: rgba(255, 255, 255, 0.2);
   color: transparent;
 }
-input[type="text"]:focus + .ghost .ghost__torso {
+input[type="text"],
+input[type="password"],
+input[type="email"]:focus + .ghost .ghost__torso {
   transform: translate(-50%, 42px) scaleY(0.9);
 }
-input[type="text"]:focus + .ghost .ghost__eyes * {
+input[type="text"],
+input[type="password"],
+input[type="email"]:focus + .ghost .ghost__eyes * {
   background: rgba(255, 255, 255, 0.6);
 }
-input[type="text"]:focus + .ghost .ghost__face {
+input[type="text"],
+input[type="password"],
+input[type="email"]:focus + .ghost .ghost__face {
   transform: translate(-50%, 0.4em);
 }
-input[type="text"]:focus + .ghost .ghost__mouth {
+input[type="text"],
+input[type="password"],
+input[type="email"]:focus + .ghost .ghost__mouth {
   transform: scaleY(0.6);
   border-color: rgba(255, 255, 255, 0.6);
 }
-input[type="text"]:focus + .ghost .ghost__hands {
+input[type="text"],
+input[type="password"],
+input[type="email"]:focus + .ghost .ghost__hands {
   transform: translate(-50%, 0.2em);
 }
-input[type="text"]:focus + .ghost .ghost__hands * {
+input[type="text"],
+input[type="password"],
+input[type="email"]:focus + .ghost .ghost__hands * {
   background: transparent;
 }
-input[type="text"]:focus + .ghost .ghost__legs {
+input[type="text"],
+input[type="password"],
+input[type="email"]:focus + .ghost .ghost__legs {
   border-bottom-left-radius: 2em;
   border-bottom-right-radius: 0.6em;
   transform: translateX(-50%) scaleY(0.85);
