@@ -3,6 +3,9 @@ from flask import make_response, session, g
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from io import BytesIO
+from werkzeug.security import generate_password_hash, check_password_hash
+import secrets
 import os
 
 app = Flask(__name__)
@@ -23,15 +26,17 @@ class Songs(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(15), nullable=False)
     artist = db.Column(db.String(15))
+    cover_photo = db.Column(db.String(100))
+    duration = db.Column(db.Time)
     likes = db.Column(db.Integer, default=0)
     liked = db.relationship('Likes', backref='Songs')
 
 
-class Users(db.Model):
+class Users(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(15), nullable=False)
+    username = db.Column(db.String(15), nullable=False, unique=True)
     password = db.Column(db.String(15), nullable=False)
-    mail_id = db.Column(db.String(15), nullable=False)
+    mail_id = db.Column(db.String(15), nullable=False, unique=True)
     likes = db.relationship('Likes', backref='Users')
 
 
@@ -41,13 +46,14 @@ class Likes(db.Model):
     song_id = db.Column(db.Integer, db.ForeignKey(Songs.id))
     like = db.Column(db.Integer, default=0)
 
+
 @login_manager.user_loader
 def load_user(user_id):
-    return Users.query.get(int(id))
+    return Users.query.get(int(user_id))
 
 
-@app.route('/signUp', methods=['GET', 'POST'])
-def signUp():
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
     if request.method == "POST":
         username = request.form['username']
         password = request.form['password']
@@ -55,20 +61,22 @@ def signUp():
         cpassword = request.form['cpassword']
         mail_id = request.form['mail_id']
 
-
         user = Users.query.filter_by(username=username).first()
         if user:
             flash("User Name Already Exists, Choose Different", "warning")
             return redirect("/signUp")
         if(password == cpassword):
-            new_user = Users(username=username, password=hashed_password,mail_id=mail_id)
+            new_user = Users(username=username,
+                             password=hashed_password, mail_id=mail_id)
             db.session.add(new_user)
+            db.session.commit()
+
             # message = "You have been succesfully registered in the Music Player!\nThank You For Registering."
             # server = smtplib.SMTP("smtp.gmail.com", 587)
             # server.starttls()
             # server.login("studentrepository20@gmail.com", "studentrepo")
             # server.sendmail("studentrepository20@gmail.com", email, message)
-            db.session.commit()
+
             flash("Sucessfully Registered!", "success")
             return redirect('/login')
         else:
@@ -77,22 +85,26 @@ def signUp():
 
     return render_template("sign-up.html")
 
+
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     if request.method == "POST":
-        username = request.form['username']
-        password = request.form['password']
+        username = request.form.get('username')
+        password = request.form.get('password')
+        print("username - ", username)
+        print("password - ", password)
 
         user = Users.query.filter_by(username=username).first()
+        print(user)
 
         if not user:
             flash("No such User found, Try Signing Up First", "warning")
-            return redirect("/signUp")
+            return redirect("/signup")
 
         if user:
             if check_password_hash(user.password, password):
                 login_user(user)
-                return currentuser.username
+                return current_user.username
             else:
                 flash("Incorrect password", "danger")
                 return redirect("login")
@@ -100,9 +112,16 @@ def login():
     return render_template("log-in.html")
 
 
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return "<h1>User Logged out</h1>"
+
+
 @app.route('/')
 def index():
-    return "Hello"
+    return render_template('home.html')
 
 
 if __name__ == "__main__":
