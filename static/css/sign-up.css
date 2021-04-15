@@ -216,6 +216,9 @@ input[type=text]:focus + .ghost .ghost__legs {
 }
 @media (max-width: 575.98px) 
 {
+  .navbar{
+    background-color: black;
+ }
    #container1 {
   -webkit-animation: float 3s infinite alternate;
           animation: float 3s infinite alternate;

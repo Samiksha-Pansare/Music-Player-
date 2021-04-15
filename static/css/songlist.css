@@ -2,19 +2,12 @@ body {
   background: #333;
   color: white;
 }
-#Sign-in{
-	width: 150px;
-	border-color: white;
-	border-radius: 25%;
-	color: white;
+@media (max-width: 575.98px) 
+{
+ .navbar{
+    background-color: black;
+ }
 }
-#Log-in{
-	width: 150px;
-	border-color: white;
-	border-radius: 25%;
-	color: white;
-}
-.abs,
 h2:after,
 .cards .card figcaption,
 .cards .card:after,
@@ -217,10 +210,3 @@ h2:after {
   opacity: 1;
   transform: none;
 }
-@media (max-width: 575.98px) 
-{
- .navbar{
-    background-color: black;
- }
-}
-
