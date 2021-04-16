@@ -7,6 +7,7 @@ from io import BytesIO
 from werkzeug.security import generate_password_hash, check_password_hash
 import secrets
 import os
+from mutagen.mp3 import MP3
 
 
 app = Flask(__name__)
@@ -26,6 +27,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 class Songs(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(15), nullable=False)
+    path = db.Column(db.String(100), nullable=False)
     artist = db.Column(db.String(15))
     cover_photo = db.Column(db.String(100))
     duration = db.Column(db.Time)
@@ -52,6 +54,12 @@ class Likes(db.Model):
 def load_user(user_id):
     return Users.query.get(int(user_id))
 
+def convert(seconds):
+    hours = seconds // 3600
+    seconds %= 3600
+    mins = seconds // 60
+    seconds %= 60
+    return hours, mins, seconds
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -89,9 +97,7 @@ def signup():
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
-    print("Out side if")
     if request.method == "POST":
-        print("Inside if")
         username = request.form.get('username')
         password = request.form.get('password')
         print("username - ", username)
@@ -146,6 +152,77 @@ def likedsonglist():
 @login_required
 def search():
     return render_template('search.html')
+
+def save_picture(form_picture):
+    random_hex = secrets.token_hex(8)
+    _, f_ext = os.path.splitext(form_picture.filename)
+    picture_fn = random_hex + f_ext
+    print(f_ext)
+    picture_path = os.path.join(
+        app.root_path, 'static\Song\SongCover', picture_fn)
+    print(picture_path)
+    form_picture.save(picture_path)
+    print("form_picture Saved")
+    return picture_fn
+
+def save_song(form_song):
+    random_hex = secrets.token_hex(8)
+    _, f_ext = os.path.splitext(form_song.filename)
+    song_fn = random_hex + f_ext
+    print(f_ext)
+    song_path = os.path.join(
+        app.root_path, 'static\Song\song',song_fn)
+    print(song_path)
+    form_song.save(song_path)
+    print("form_song Saved")
+    return song_fn
+
+
+@app.route('/addsongs', methods=['POST', 'GET'])
+def addsongs():
+    if request.method=='POST':
+        songpath = request.files['songpath']
+        songname = request.form.ge('songname')
+        artist = request.form.get('artist')
+        cover_photo = request.files['cover_photo']
+        song_file = save_song(songname)
+        cover_file = save_picture(cover_photo)
+        print("songfile variable assigned")
+        print(song_file)
+        audio = MP3(f"static\Song\song\{}".format(song_file))
+        audio_info = audio.info    
+        length_in_secs = int(audio_info.length)
+        hours, mins, seconds = convert(length_in_secs)
+        duration = f"{}:{}".format(mins,seconds)
+        print(duration)
+        new_song = Songs(path=song_file, name=songname, cover_photo = cover_file, artist=artist,duration=duration)
+        student.image_file = picture_file
+        db.session.commit()
+        print("Session commited")
+        return "songadded"
+    return render_template('add_songs.html')
+    
+
+
+@app.route('/profilepic/<int:student_id>', methods=['POST'])
+def profilepic(student_id):
+    print("inside profile pic function")
+    student = Student.query.filter_by(id=student_id).first()
+    print("Query for one student")
+    picture_file = save_picture(request.files['profile_pic'])
+    print("picture_file variable assigned")
+    print(picture_file)
+    student.image_file = picture_file
+    db.session.commit()
+    print("Session commited")
+    return redirect(url_for("feed", currentuser=current_user))
+        
+
+
+
+
+    return render_template('add_songs.html')
+
 
 
 
