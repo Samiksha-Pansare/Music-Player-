@@ -8,6 +8,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import secrets
 import os
 
+
 app = Flask(__name__)
 
 db = SQLAlchemy(app)
@@ -104,9 +105,10 @@ def login():
         if user:
             if check_password_hash(user.password, password):
                 login_user(user)
+                print("Login Done!")
                 return current_user.username
             else:
-                flash("Incorrect password", "danger")
+                flash("Incorrect password", "danger")                
                 return redirect("login")
 
     return render_template("log-in.html")
@@ -122,6 +124,28 @@ def logout():
 @app.route('/')
 def index():
     return render_template('home.html')
+
+@app.route('/dashboard', methods=['POST', 'GET'])
+@login_required
+def dashboard():
+    return render_template('dashboard.html')
+
+@app.route('/allsonglist', methods=['POST', 'GET'])
+@login_required
+def allsonglist():
+    return render_template('allsonglist.html')
+
+@app.route('/likedsonglist', methods=['POST', 'GET'])
+@login_required
+def likedsonglist():
+    return render_template('likedsonglist.html')
+
+@app.route('/search', methods=['POST', 'GET'])
+@login_required
+def search():
+    return render_template('search.html')
+
+
 
 
 if __name__ == "__main__":
