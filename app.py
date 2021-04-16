@@ -89,7 +89,9 @@ def signup():
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
+    print("Out side if")
     if request.method == "POST":
+        print("Inside if")
         username = request.form.get('username')
         password = request.form.get('password')
         print("username - ", username)
@@ -106,7 +108,7 @@ def login():
             if check_password_hash(user.password, password):
                 login_user(user)
                 print("Login Done!")
-                return current_user.username
+                return redirect("allsonglist")
             else:
                 flash("Incorrect password", "danger")                
                 return redirect("login")
