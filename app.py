@@ -30,7 +30,7 @@ class Songs(db.Model):
     path = db.Column(db.String(100), nullable=False)
     artist = db.Column(db.String(15))
     cover_photo = db.Column(db.String(100))
-    duration = db.Column(db.Time)
+    duration = db.Column(db.String(100))
     likes = db.Column(db.Integer, default=0)
     liked = db.relationship('Likes', backref='Songs')
 
@@ -54,12 +54,14 @@ class Likes(db.Model):
 def load_user(user_id):
     return Users.query.get(int(user_id))
 
+
 def convert(seconds):
     hours = seconds // 3600
     seconds %= 3600
     mins = seconds // 60
     seconds %= 60
     return hours, mins, seconds
+
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -116,7 +118,7 @@ def login():
                 print("Login Done!")
                 return redirect("allsonglist")
             else:
-                flash("Incorrect password", "danger")                
+                flash("Incorrect password", "danger")
                 return redirect("login")
 
     return render_template("log-in.html")
@@ -133,98 +135,84 @@ def logout():
 def index():
     return render_template('home.html')
 
+
 @app.route('/dashboard', methods=['POST', 'GET'])
 @login_required
 def dashboard():
     return render_template('dashboard.html')
+
 
 @app.route('/allsonglist', methods=['POST', 'GET'])
 @login_required
 def allsonglist():
     return render_template('allsonglist.html')
 
+
 @app.route('/likedsonglist', methods=['POST', 'GET'])
 @login_required
 def likedsonglist():
     return render_template('likedsonglist.html')
+
 
 @app.route('/search', methods=['POST', 'GET'])
 @login_required
 def search():
     return render_template('search.html')
 
+
 def save_picture(form_picture):
-    random_hex = secrets.token_hex(8)
-    _, f_ext = os.path.splitext(form_picture.filename)
-    picture_fn = random_hex + f_ext
-    print(f_ext)
+    picture_fn = form_picture.filename
+    print(picture_fn)
     picture_path = os.path.join(
         app.root_path, 'static\Song\SongCover', picture_fn)
     print(picture_path)
     form_picture.save(picture_path)
-    print("form_picture Saved")
+    print("Form_picture Saved")
     return picture_fn
 
+
 def save_song(form_song):
-    random_hex = secrets.token_hex(8)
-    _, f_ext = os.path.splitext(form_song.filename)
-    song_fn = random_hex + f_ext
-    print(f_ext)
+    song_fn = form_song.filename
     song_path = os.path.join(
-        app.root_path, 'static\Song\song',song_fn)
+        app.root_path, 'static\Song\song', song_fn)
     print(song_path)
     form_song.save(song_path)
-    print("form_song Saved")
+    print("Form_song Saved")
     return song_fn
 
 
 @app.route('/addsongs', methods=['POST', 'GET'])
 def addsongs():
-    if request.method=='POST':
-        songpath = request.files['songpath']
-        songname = request.form.ge('songname')
+    if request.method == 'POST':
+        print("Inside if loop")
+        songname = request.form.get('song')
+        song = request.files['songpath']
         artist = request.form.get('artist')
         cover_photo = request.files['cover_photo']
-        song_file = save_song(songname)
+        print("Got all the Form Info")
+        song_file = save_song(song)
         cover_file = save_picture(cover_photo)
-        print("songfile variable assigned")
+        print("Saved Song And Cover Photo")
         print(song_file)
-        audio = MP3(f"static\Song\song\{}".format(song_file))
-        audio_info = audio.info    
+        print(cover_file)
+
+        audio = MP3(f"static\Song\song\{song_file}")
+        audio_info = audio.info
         length_in_secs = int(audio_info.length)
         hours, mins, seconds = convert(length_in_secs)
-        duration = f"{}:{}".format(mins,seconds)
+
+        duration = f"{mins}:{seconds}"
         print(duration)
-        new_song = Songs(path=song_file, name=songname, cover_photo = cover_file, artist=artist,duration=duration)
-        student.image_file = picture_file
+
+        path = f"static\Song\song\{song_file}"
+
+        new_song = Songs(path=path, name=songname,
+                         cover_photo=cover_file, artist=artist, duration=duration)
+        db.session.add(new_song)
         db.session.commit()
         print("Session commited")
-        return "songadded"
+        return "Song Added"
     return render_template('add_songs.html')
-    
-
-
-@app.route('/profilepic/<int:student_id>', methods=['POST'])
-def profilepic(student_id):
-    print("inside profile pic function")
-    student = Student.query.filter_by(id=student_id).first()
-    print("Query for one student")
-    picture_file = save_picture(request.files['profile_pic'])
-    print("picture_file variable assigned")
-    print(picture_file)
-    student.image_file = picture_file
-    db.session.commit()
-    print("Session commited")
-    return redirect(url_for("feed", currentuser=current_user))
-        
-
-
-
-
-    return render_template('add_songs.html')
-
-
-
 
 
 if __name__ == "__main__":

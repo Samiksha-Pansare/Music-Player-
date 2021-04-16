@@ -7,11 +7,12 @@
     <title>Document</title>
 </head>
 <body>
-    <form method="POST">
-        <input type= "file" name = "songname" placeholder= "Song Name" />
+    <form method="POST" enctype="multipart/form-data">
+        <input type= "text" name = "song" placeholder= "Song" />
+        <input type= "file" name = "songpath" placeholder= "Song Path" />
         <input type= "text" name = "artist" placeholder= "Artist" />
         <input type= "file" name = "cover_photo" placeholder= "Add Cover Photo" />
-        <button type="submit" formaction="" />
+        <button type="submit" formaction="/addsongs">ADD</button>
     </form>
     
 </body>
