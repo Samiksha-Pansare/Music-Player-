@@ -39,92 +39,25 @@
 <div class="wrapper">
 
 <div class="search-box">
-  <form>
-    <button id="search" type="button" style="border: none;background: none;color: white;">Search</button>
-    <input type="text" placeholder=" "/><span></span>
+  <form method="POST">
+    <button id="search" type="submit" formaction="/search" style="border: none;background: none;color: white;">Search</button>
+    <input type="text" name="search_string" placeholder=" "/><span></span>
   </form>
 </div>
   <h2><strong>All Songs<span></span></strong></h2>
 
   <div class="cards">
+    {% for song in results %}
 
     <figure class="card">
-
-      <img src="../images/Card1.jpg"/>
-
-      <figcaption><button id="play" type="button" style="border: none;background: none;color: white;"><i class="fa fa-play-circle" style="font-size:38px"></i></button></figcaption>
-
+      <img src="{{url_for('static', filename = 'Song/SongCover/' + song.cover_photo) }}"/>
+      <figcaption>
+        <button id="play" type="button" style="border: none;background: none;color: white;"><i class="fa fa-play-circle" style="font-size:38px"></i></button>
+        <h4 style="text-decoration: none; color: black; background-color: gray;">{{song.name}}</h4>
+      </figcaption>
     </figure>
 
-    <figure class="card">
-
-      <img src="../images/Card2.jpg" />
-
-      <figcaption><button id="play" type="button" style="border: none;background: none;color: white;"><i class="fa fa-play-circle" style="font-size:38px"></i></button></figcaption>
-
-    </figure>
-
-    <figure class="card">
-
-      <img src="../images/Card3.jpg" />
-
-      <figcaption><button id="play" type="button" style="border: none;background: none;color: white;"><i class="fa fa-play-circle" style="font-size:38px"></i></button></figcaption>
-
-    </figure>
-    <figure class="card">
-
-      <img src="../images/Card1.jpg"/>
-
-      <figcaption><button id="play" type="button" style="border: none;background: none;color: white;"><i class="fa fa-play-circle" style="font-size:38px"></i></button></figcaption>
-
-    </figure>
-
-    <figure class="card">
-
-      <img src="../images/Card2.jpg" />
-
-      <figcaption><button id="play" type="button" style="border: none;background: none;color: white;"><i class="fa fa-play-circle" style="font-size:38px"></i></button></figcaption>
-
-    </figure>
-
-    <figure class="card">
-
-      <img src="../images/Card3.jpg" />
-
-      <figcaption><button id="play" type="button" style="border: none;background: none;color: white;"><i class="fa fa-play-circle" style="font-size:38px"></i></button></figcaption>
-
-    </figure><figure class="card">
-
-      <img src="../images/Card1.jpg"/>
-
-      <figcaption><button id="play" type="button" style="border: none;background: none;color: white;"><i class="fa fa-play-circle" style="font-size:38px"></i></button></figcaption>
-
-    </figure>
-
-    <figure class="card">
-
-      <img src="../images/Card2.jpg" />
-
-      <figcaption><button id="play" type="button" style="border: none;background: none;color: white;"><i class="fa fa-play-circle" style="font-size:38px"></i></button></figcaption>
-
-    </figure>
-
-    <figure class="card">
-
-      <img src="../images/Card3.jpg" />
-
-      <figcaption><button id="play" type="button" style="border: none;background: none;color: white;"><i class="fa fa-play-circle" style="font-size:38px"></i></button></figcaption>
-
-    </figure>
-    <figure class="card">
-
-      <img src="../images/Card1.jpg" />
-
-     <figcaption><button id="play" type="button" style="border: none;background: none;color: white;"><i class="fa fa-play-circle" style="font-size:38px"></i></button></figcaption>
-
-    </figure>
-
-
+    {% endfor %}
   </div>
 
 </div>  

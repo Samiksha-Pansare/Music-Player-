@@ -112,6 +112,15 @@
 <div style="display: flex;justify-content: center;padding-top: 40px;">
   <button formaction="/signup" type="submit" class="btn btn-light">Sign In</button>
 </div>
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+   <div class = "flashes" style="color: whitesmoke; text-align:center;">
+      {% for message in messages %}
+         <h4>{{ message }}</h4>
+      {% endfor %}   
+   <div>
+{% endif %}
+{% endwith %}
 </div>
 </form>
 </body>

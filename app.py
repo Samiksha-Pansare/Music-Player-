@@ -102,8 +102,6 @@ def login():
     if request.method == "POST":
         username = request.form.get('username')
         password = request.form.get('password')
-        print("username - ", username)
-        print("password - ", password)
 
         user = Users.query.filter_by(username=username).first()
         print(user)
@@ -145,7 +143,8 @@ def dashboard():
 @app.route('/allsonglist', methods=['POST', 'GET'])
 @login_required
 def allsonglist():
-    return render_template('allsonglist.html')
+    songs=Songs.query.all()
+    return render_template('allsonglist.html',songs=songs)
 
 
 @app.route('/likedsonglist', methods=['POST', 'GET'])
@@ -157,6 +156,21 @@ def likedsonglist():
 @app.route('/search', methods=['POST', 'GET'])
 @login_required
 def search():
+    if request.method == "POST":
+        print("Inside if")
+        search_string = request.form['search_string']
+        search = "{0}".format(search_string)
+        search = search+'%'
+        print(search)
+        print("Initiated")
+        
+
+        results = Songs.query.filter(or_(Songs.name.like(search), Songs.artist.like(search))).all()
+        print(results)
+        if len(results) == 0:
+            flash("No such song availabe!")
+            print("mnoo")
+        return render_template('search.html', results=results)
     return render_template('search.html')
 
 
