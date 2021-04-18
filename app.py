@@ -8,6 +8,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import secrets
 import os
 from mutagen.mp3 import MP3
+from pygame import *
 
 
 app = Flask(__name__)
@@ -21,7 +22,7 @@ login_manager.login_message = "You need to Login first"
 
 app.config['SECRET_KEY'] = os.urandom(24)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///MusicPlayer.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 
 class Songs(db.Model):
@@ -134,10 +135,11 @@ def index():
     return render_template('home.html')
 
 
-@app.route('/dashboard', methods=['POST', 'GET'])
+@app.route('/dashboard/<id>', methods=['POST', 'GET'])
 @login_required
-def dashboard():
-    return render_template('dashboard.html')
+def dashboard(id):
+    song=Songs.query.filter_by(id=id).first()
+    return render_template('dashboard.html',song=song)
 
 
 @app.route('/allsonglist', methods=['POST', 'GET'])
@@ -227,6 +229,40 @@ def addsongs():
         print("Session commited")
         return "Song Added"
     return render_template('add_songs.html')
+
+@app.route('/play/<id>' , methods=['POST'])
+def play(id):
+    mixer.init()
+    song=Songs.query.filter_by(id=id).first()
+    mixer.music.load(song.path)
+    mixer.music.play()
+    url = f"/dashboard/{id}"
+    return redirect(url)
+
+@app.route('/pause/<id>' , methods=['POST'])
+def pause(id):
+    mixer.init()
+    song=Songs.query.filter_by(id=id).first()
+    mixer.music.pause()
+    url = f"/dashboard/{id}"
+    return redirect(url)
+
+@app.route('/unpause/<id>' , methods=['POST'])
+def unpause(id):
+    mixer.init()
+    song=Songs.query.filter_by(id=id).first()
+    mixer.music.unpause()
+    url = f"/dashboard/{id}"
+    return redirect(url)
+
+@app.route('/stop/<id>' , methods=['POST'])
+def stop(id):
+    mixer.init()
+    song=Songs.query.filter_by(id=id).first()
+    mixer.music.stop()
+    url = f"/dashboard/{id}"
+    return 0
+
 
 
 if __name__ == "__main__":

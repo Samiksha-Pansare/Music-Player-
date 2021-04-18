@@ -45,7 +45,9 @@
     <figure class="card">
       <img src="{{url_for('static', filename = 'Song/SongCover/' + song.cover_photo) }}"/>
       <figcaption>
-        <button id="play" type="button" style="border: none;background: none;color: white;"><i class="fa fa-play-circle" style="font-size:38px"></i></button>
+        <form method="POST">
+        <button id="play" type="submit" formaction="/play/{{song.id}}"  style="border: none;background: none;color: white;"><i class="fa fa-play-circle" style="font-size:38px"></i></button>
+        </form>
         <h4 style="text-decoration: none; color: black; background-color: gray;">{{song.name}}</h4>
       </figcaption>
     </figure>

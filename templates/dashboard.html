@@ -38,11 +38,11 @@
 <p><br></p>
     <div class="player">
         <div class="cover">
-            <img src="https://hosseinghanbari.ir/other/music-player/autumn.jpg" alt="">
+            <img src="{{url_for('static', filename = 'Song/SongCover/' + song.cover_photo) }}" alt="">
         </div>
         <div class="info">
-            <div class="title">Autumn</div>
-            <div class="singer">Instrumental Music</div>
+            <div class="title">{{song.name}}</div>
+            <div class="singer">{{song.artist}}</div>
         </div>
         
         <div class="volume-box">
@@ -65,19 +65,21 @@
             <input type="range" step="1" class="seekbar" value="0" min="0" max="100" oninput="handleSeekBar()">
 
             <audio class="music-element">
-                <source src="https://hosseinghanbari.ir/other/music-player/autumn.mp3" type="audio/mp3">
+                <source src="../../{{song.path}}" type="audio/mp3">
             </audio>
-            <span class="current-time">0:0</span><span class="duration">0:0</span>
+            <span class="current-time">{{current_time}}</span><span class="duration">{{song.duration}}</span>
             <div style="justify-content: center;display: flex;">
-              <button id="play" type="button"><i class="fa fa-play-circle" style="font-size:38px"></i></button>
-              <button id="pause" type="button"><i class="fa fa-pause-circle" style="font-size:38px;"></i></button>
+              <form method="POST">
+                <button id="play" type="submit" formaction="/unpause/{{song.id}}"  ><i class="fa fa-play-circle" style="font-size:38px"></i></button>
+                <button id="pause" type="submit" formaction="/pause/{{song.id}}"><i class="fa fa-pause-circle" style="font-size:38px;"></i></button>
+              </form>
             </div>
             
         </div>
     </div>
 
 </body>
-<!-- <script type="text/javascript" src="../static/js/dashboard.js"></script> -->
+<script type="text/javascript" src="../static/js/progress.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script type="text/javascript" src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
 </html>
