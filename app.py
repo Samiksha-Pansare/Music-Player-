@@ -145,7 +145,7 @@ def index():
 @login_required
 def dashboard(id):
     song = Songs.query.filter_by(id=id).first()
-    return render_template('dashboard.html', song=song)
+    return render_template('dashboard.html', song=song,current_user=current_user)
 
 
 @app.route('/allsonglist', methods=['POST', 'GET'])
@@ -267,6 +267,32 @@ def unpause(id):
 def stop():
     mixer.music.stop()
     return 0
+
+@app.route('/liked/<id>/<song_id>', methods=['GET', 'POST'])
+def liked(id,song_id):
+    information = request.data
+    info=information.decode("utf-8")
+    user=Users.query.filter_by(id=id).first()
+    song = Songs.query.filter_by(id=song_id).first()
+    if info=='true':
+        val=1
+        u=Likes.query.filter_by(user_id=user.id, song_id=song.id,like=1)
+        if u:
+            pass
+        else:
+            new = Likes(user_id=user.id, song_id=song.id,like=val)
+            db.session.add(new)
+            db.session.commit()
+        print(info)
+
+    elif info=='false':
+        val=0
+        u=Likes.query.filter_by(user_id=user.id, song_id=song.id,like=1)
+        if u:
+            u.delete()
+            db.session.commit()
+        print(info)
+    return information
 
 
 if __name__ == "__main__":

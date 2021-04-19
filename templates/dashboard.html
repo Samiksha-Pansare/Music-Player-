@@ -57,8 +57,10 @@
           
               <div><button id="vol-up" type="button"><i class="fa fa-volume-up"style="font-size:38px"></i></button></div>
               <div class="wishChkBox" style="text-align: center;">
-                <input type="checkbox" id="wish1" name="wish1"  style="font-size:38px;"/>
-                <label for="wish1"> </label>
+                <form name="Like-Form" method="POST">
+                  <input type="checkbox" id="wish1" name="wish1" onclick="likefunc()" style="font-size:38px;"/>
+                  <label for="wish1"> </label>
+                </form>
         </div>
               <div><button id="vol-down" type="button"><i class="fa fa-volume-down" style="font-size:38px;"></i></button></div>
         </div>
@@ -79,6 +81,20 @@
     </div>
 
 </body>
+<script>
+  function likefunc()
+  {
+    const cb = document.getElementById('wish1');
+    console.log(cb.checked);
+    const URL = '/liked/{{current_user.id}}/{{song.id}}'
+    const xhr = new XMLHttpRequest();
+    sender = JSON.stringify(cb.checked)
+    xhr.open('POST', URL);
+    xhr.send(sender)
+
+  }
+  
+</script>
 <script type="text/javascript" src="../static/js/progress.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script type="text/javascript" src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
