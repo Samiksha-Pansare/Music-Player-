@@ -66,6 +66,8 @@ def convert(seconds):
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
+    if mixer.get_init:
+        stop()
     if request.method == "POST":
         username = request.form['username']
         password = request.form['password']
@@ -76,7 +78,7 @@ def signup():
         user = Users.query.filter_by(username=username).first()
         if user:
             flash("User Name Already Exists, Choose Different", "warning")
-            return redirect("/signUp")
+            return redirect("/signup")
         if(password == cpassword):
             new_user = Users(username=username,
                              password=hashed_password, mail_id=mail_id)
@@ -93,13 +95,15 @@ def signup():
             return redirect('/login')
         else:
             flash("Passwords don't match", "danger")
-            return redirect("/signUp")
+            return redirect("/signup")
 
     return render_template("sign-up.html")
 
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
+    if mixer.get_init():
+        stop()
     if request.method == "POST":
         username = request.form.get('username')
         password = request.form.get('password')
@@ -132,21 +136,22 @@ def logout():
 
 @app.route('/')
 def index():
+    if mixer.get_init():
+        stop()
     return render_template('home.html')
 
 
 @app.route('/dashboard/<id>', methods=['POST', 'GET'])
 @login_required
 def dashboard(id):
-    song=Songs.query.filter_by(id=id).first()
-    return render_template('dashboard.html',song=song)
+    song = Songs.query.filter_by(id=id).first()
+    return render_template('dashboard.html', song=song)
 
 
 @app.route('/allsonglist', methods=['POST', 'GET'])
-@login_required
 def allsonglist():
-    songs=Songs.query.all()
-    return render_template('allsonglist.html',songs=songs)
+    songs = Songs.query.all()
+    return render_template('allsonglist.html', songs=songs)
 
 
 @app.route('/likedsonglist', methods=['POST', 'GET'])
@@ -165,9 +170,9 @@ def search():
         search = search+'%'
         print(search)
         print("Initiated")
-        
 
-        results = Songs.query.filter(or_(Songs.name.like(search), Songs.artist.like(search))).all()
+        results = Songs.query.filter(
+            or_(Songs.name.like(search), Songs.artist.like(search))).all()
         print(results)
         if len(results) == 0:
             flash("No such song availabe!")
@@ -230,39 +235,38 @@ def addsongs():
         return "Song Added"
     return render_template('add_songs.html')
 
-@app.route('/play/<id>' , methods=['POST'])
+
+@app.route('/play/<id>', methods=['POST'])
 def play(id):
     mixer.init()
-    song=Songs.query.filter_by(id=id).first()
+    song = Songs.query.filter_by(id=id).first()
     mixer.music.load(song.path)
     mixer.music.play()
     url = f"/dashboard/{id}"
     return redirect(url)
 
-@app.route('/pause/<id>' , methods=['POST'])
+
+@app.route('/pause/<id>', methods=['POST'])
 def pause(id):
     mixer.init()
-    song=Songs.query.filter_by(id=id).first()
+    song = Songs.query.filter_by(id=id).first()
     mixer.music.pause()
     url = f"/dashboard/{id}"
     return redirect(url)
 
-@app.route('/unpause/<id>' , methods=['POST'])
+
+@app.route('/unpause/<id>', methods=['POST'])
 def unpause(id):
     mixer.init()
-    song=Songs.query.filter_by(id=id).first()
+    song = Songs.query.filter_by(id=id).first()
     mixer.music.unpause()
     url = f"/dashboard/{id}"
     return redirect(url)
 
-@app.route('/stop/<id>' , methods=['POST'])
-def stop(id):
-    mixer.init()
-    song=Songs.query.filter_by(id=id).first()
-    mixer.music.stop()
-    url = f"/dashboard/{id}"
-    return 0
 
+def stop():
+    mixer.music.stop()
+    return 0
 
 
 if __name__ == "__main__":
