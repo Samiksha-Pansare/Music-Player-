@@ -55,7 +55,7 @@
         <div class="music-box">
           <div class="d-flex justify-content-around" style="justify-content: center;display: flex;">
           
-              <div><button id="vol-up" type="button"><i class="fa fa-volume-up"style="font-size:38px"></i></button></div>
+              <div><form method="POST"><button id="vol-up" type="submit" formaction="/volup/{{song.id}}"><i class="fa fa-volume-up"style="font-size:38px"></i></button></form></div>
               <div class="wishChkBox" style="text-align: center;">
                 <form name="Like-Form" method="POST">
                   {% if liked_song %}
@@ -68,7 +68,7 @@
 
                 </form>
         </div>
-              <div><button id="vol-down" type="button"><i class="fa fa-volume-down" style="font-size:38px;"></i></button></div>
+              <div><form method="POST"><button id="vol-down" type="submit" formaction="/voldown/{{song.id}}"><i class="fa fa-volume-down" style="font-size:38px;"></i></button></form></div>
         </div>
             <input type="range" step="1" class="seekbar" value="0" min="0" max="100" oninput="handleSeekBar()">
 

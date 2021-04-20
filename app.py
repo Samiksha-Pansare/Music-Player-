@@ -267,6 +267,28 @@ def unpause(id):
     return redirect(url)
 
 
+@app.route('/voldown/<id>', methods=['POST'])
+def voldown(id):
+    vol = mixer.music.get_volume()
+    if vol == 0.0:
+        pass
+    vol = vol-0.1
+    mixer.music.set_volume(vol)
+    url = f"/dashboard/{id}"
+    return redirect(url)
+
+
+@app.route('/volup/<id>', methods=['POST'])
+def volup(id):
+    vol = mixer.music.get_volume()
+    if vol == 1.0:
+        pass
+    vol = vol+0.1
+    mixer.music.set_volume(vol)
+    url = f"/dashboard/{id}"
+    return redirect(url)
+
+
 def stop():
     mixer.music.stop()
     return 0
