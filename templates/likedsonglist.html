@@ -40,82 +40,34 @@
   <h2><strong>Liked Songs<span></span></strong></h2>
 
   <div class="cards">
+    {% if songs %}
+    {% for song in songs %}
 
     <figure class="card">
-
-      <img src="{{ url_for('static',filename='images/Card1.jpg') }}"/>
-
-      <figcaption><button id="play" type="button" style="border: none;background: none;color: white;"><i class="fa fa-play-circle" style="font-size:38px"></i></button></figcaption>
-
+      <img src="{{url_for('static', filename = 'Song/SongCover/' + song.cover_photo) }}"/>
+      <figcaption>
+        <form method="POST">
+        <button id="play" type="submit" formaction="/play/{{song.id}}"  style="border: none;background: none;color: white;"><i class="fa fa-play-circle" style="font-size:38px"></i></button>
+        </form>
+        <h4 style="text-decoration: none; color: black; background-color: gray;">{{song.name}}</h4>
+      </figcaption>
     </figure>
 
-    <figure class="card">
+    {% endfor %}
+    {% else %}
+    <p><br></p>
+    {% with messages = get_flashed_messages() %}
+                 {% if messages %}
+                    <div class = "flashes" style="color: whitesmoke; text-align:center;">
+                       {% for message in messages %}
+                          <h4>{{ message }}</h4>
+                       {% endfor %}   
+                    <div>
+                 {% endif %}
+   {% endwith %}
 
-      <img src="{{ url_for('static',filename='images/Card1.jpg') }}" />
+   {% endif %}
 
-      <figcaption><button id="play" type="button" style="border: none;background: none;color: white;"><i class="fa fa-play-circle" style="font-size:38px"></i></button></figcaption>
-
-    </figure>
-
-    <figure class="card">
-
-      <img src="../images/Card3.jpg" />
-
-      <figcaption><button id="play" type="button" style="border: none;background: none;color: white;"><i class="fa fa-play-circle" style="font-size:38px"></i></button></figcaption>
-
-    </figure>
-    <figure class="card">
-
-      <img src="../images/Card1.jpg"/>
-
-      <figcaption><button id="play" type="button" style="border: none;background: none;color: white;"><i class="fa fa-play-circle" style="font-size:38px"></i></button></figcaption>
-
-    </figure>
-
-    <figure class="card">
-
-      <img src="../images/Card2.jpg" />
-
-      <figcaption><button id="play" type="button" style="border: none;background: none;color: white;"><i class="fa fa-play-circle" style="font-size:38px"></i></button></figcaption>
-
-    </figure>
-
-    <figure class="card">
-
-      <img src="../images/Card3.jpg" />
-
-      <figcaption><button id="play" type="button" style="border: none;background: none;color: white;"><i class="fa fa-play-circle" style="font-size:38px"></i></button></figcaption>
-
-    </figure><figure class="card">
-
-      <img src="../images/Card1.jpg"/>
-
-      <figcaption><button id="play" type="button" style="border: none;background: none;color: white;"><i class="fa fa-play-circle" style="font-size:38px"></i></button></figcaption>
-
-    </figure>
-
-    <figure class="card">
-
-      <img src="../images/Card2.jpg" />
-
-      <figcaption><button id="play" type="button" style="border: none;background: none;color: white;"><i class="fa fa-play-circle" style="font-size:38px"></i></button></figcaption>
-
-    </figure>
-
-    <figure class="card">
-
-      <img src="../images/Card3.jpg" />
-
-      <figcaption><button id="play" type="button" style="border: none;background: none;color: white;"><i class="fa fa-play-circle" style="font-size:38px"></i></button></figcaption>
-
-    </figure>
-    <figure class="card">
-
-      <img src="../images/Card1.jpg" />
-
-     <figcaption><button id="play" type="button" style="border: none;background: none;color: white;"><i class="fa fa-play-circle" style="font-size:38px"></i></button></figcaption>
-
-    </figure>
 
 
   </div>

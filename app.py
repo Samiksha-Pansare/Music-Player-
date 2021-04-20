@@ -10,19 +10,17 @@ import os
 from mutagen.mp3 import MP3
 from pygame import *
 
-
 app = Flask(__name__)
-
-db = SQLAlchemy(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
-login_manager.login_message = "You need to Login first"
 
 app.config['SECRET_KEY'] = os.urandom(24)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///MusicPlayer.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
 
 
 class Songs(db.Model):
@@ -105,6 +103,7 @@ def login():
     if mixer.get_init():
         stop()
     if request.method == "POST":
+        logout()
         username = request.form.get('username')
         password = request.form.get('password')
 
@@ -131,7 +130,8 @@ def login():
 @login_required
 def logout():
     logout_user()
-    return "<h1>User Logged out</h1>"
+    flash("Successfully Logged Out")
+    return redirect('/login')
 
 
 @app.route('/')
@@ -141,11 +141,13 @@ def index():
     return render_template('home.html')
 
 
-@app.route('/dashboard/<id>', methods=['POST', 'GET'])
+@app.route('/dashboard/<song_id>', methods=['POST', 'GET'])
 @login_required
-def dashboard(id):
-    song = Songs.query.filter_by(id=id).first()
-    return render_template('dashboard.html', song=song,current_user=current_user)
+def dashboard(song_id):
+    song = Songs.query.filter_by(id=song_id).first()
+    liked_song = Likes.query.filter_by(
+        user_id=current_user.id, song_id=song_id).first()
+    return render_template('dashboard.html', song=song, current_user=current_user, liked_song=liked_song)
 
 
 @app.route('/allsonglist', methods=['POST', 'GET'])
@@ -157,26 +159,27 @@ def allsonglist():
 @app.route('/likedsonglist', methods=['POST', 'GET'])
 @login_required
 def likedsonglist():
-    return render_template('likedsonglist.html')
+    songs = []
+    liked_songs = Likes.query.filter_by(user_id=current_user.id).all()
+    for l in liked_songs:
+        song = Songs.query.filter_by(id=l.song_id).first()
+        songs.append(song)
+    if len(songs) == 0:
+        flash("LIKE some songs to Add songs in this Playlist!")
+    return render_template('likedsonglist.html', songs=songs)
 
 
 @app.route('/search', methods=['POST', 'GET'])
-@login_required
 def search():
     if request.method == "POST":
-        print("Inside if")
         search_string = request.form['search_string']
         search = "{0}".format(search_string)
         search = search+'%'
-        print(search)
-        print("Initiated")
 
         results = Songs.query.filter(
             or_(Songs.name.like(search), Songs.artist.like(search))).all()
-        print(results)
         if len(results) == 0:
             flash("No such song availabe!")
-            print("mnoo")
         return render_template('search.html', results=results)
     return render_template('search.html')
 
@@ -268,31 +271,36 @@ def stop():
     mixer.music.stop()
     return 0
 
-@app.route('/liked/<id>/<song_id>', methods=['GET', 'POST'])
-def liked(id,song_id):
+
+@app.route('/liked/<user_id>/<song_id>', methods=['GET', 'POST'])
+def liked(user_id, song_id):
     information = request.data
-    info=information.decode("utf-8")
-    user=Users.query.filter_by(id=id).first()
+    info = information.decode("utf-8")
+    user = Users.query.filter_by(id=user_id).first()
     song = Songs.query.filter_by(id=song_id).first()
-    if info=='true':
-        val=1
-        u=Likes.query.filter_by(user_id=user.id, song_id=song.id,like=1)
+    if info == 'true':
+        print("info - ", info)
+        u = Likes.query.filter_by(user_id=user.id, song_id=song.id).first()
         if u:
+            print("Inside if, userid and songid exists")
             pass
         else:
-            new = Likes(user_id=user.id, song_id=song.id,like=val)
+            print("Inside else, creating new liked row")
+            new = Likes(user_id=user.id, song_id=song.id, like=1)
             db.session.add(new)
             db.session.commit()
-        print(info)
-
-    elif info=='false':
-        val=0
-        u=Likes.query.filter_by(user_id=user.id, song_id=song.id,like=1)
+    elif info == 'false':
+        print("info - ", info)
+        u = Likes.query.filter_by(
+            user_id=user.id, song_id=song.id, like=1).first()
         if u:
-            u.delete()
+            db.session.delete(u)
             db.session.commit()
-        print(info)
-    return information
+            pass
+    else:
+        pass
+    url = f"/dashboard/{song_id}"
+    return redirect(url)
 
 
 if __name__ == "__main__":
