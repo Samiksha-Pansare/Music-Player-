@@ -9,6 +9,9 @@ import secrets
 import os
 from mutagen.mp3 import MP3
 from pygame import *
+import smtplib
+import imghdr
+from email.message import EmailMessage
 
 app = Flask(__name__)
 
@@ -62,10 +65,17 @@ def convert(seconds):
     return hours, mins, seconds
 
 
+EMAIL_ADDRESS = 'musicfiesta21@gmail.com'
+EMAIL_PASSWORD = 'musicfiestapassword'
+
+
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
-    if mixer.get_init:
-        stop()
+    try:
+        if mixer.get_init:
+            stop()
+    except:
+        pass
     if request.method == "POST":
         username = request.form['username']
         password = request.form['password']
@@ -83,11 +93,18 @@ def signup():
             db.session.add(new_user)
             db.session.commit()
 
-            # message = "You have been succesfully registered in the Music Player!\nThank You For Registering."
-            # server = smtplib.SMTP("smtp.gmail.com", 587)
-            # server.starttls()
-            # server.login("studentrepository20@gmail.com", "studentrepo")
-            # server.sendmail("studentrepository20@gmail.com", email, message)
+            msg = EmailMessage()
+            msg['Subject'] = 'Sucessfully Registered to Music Fiesta!'
+            msg['From'] = EMAIL_ADDRESS
+            msg['To'] = mail_id
+            msg.set_content('Thank you for Registering to Music Fiesta.')
+
+            f = open("templates/hello.txt", "r")
+            msg.add_alternative(f.read(), subtype='html')
+
+            with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+                smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+                smtp.send_message(msg)
 
             flash("Sucessfully Registered!", "success")
             return redirect('/login')
@@ -130,6 +147,7 @@ def login():
 @login_required
 def logout():
     logout_user()
+    stop()
     flash("Successfully Logged Out")
     return redirect('/login')
 
