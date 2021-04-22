@@ -116,9 +116,10 @@
 {% with messages = get_flashed_messages() %}
 {% if messages %}
    <div class = "flashes" style="color: whitesmoke; text-align:center;">
-      {% for message in messages %}
+    <h3>{{ messages[messages|length - 1] }}</h3>
+      <!-- {% for message in messages %}
          <h4>{{ message }}</h4>
-      {% endfor %}   
+      {% endfor %}    -->
    <div>
 {% endif %}
 {% endwith %}
