@@ -25,6 +25,7 @@
                   <li class="nav-item"><a class="nav-link" href="/likedsonglist"><i class="fa fa-heart"></i> </span>  Liked Songs</a></li>
                   <li class="nav-item"><a class="nav-link" href="/allsonglist"><i class="fa fa-music"></i> </span>  Songs</a></li>
                   <li class="nav-item"><a class="nav-link" href="/search"><i class="fa fa-search"></i> </span>  Search</a></li>
+                  <li class="nav-item"><a class="nav-link" href="/logout"><i class="fa fa-sign-out"></i> </span>  LogOut </a></li>
                 </ul>
             </div>
             <div>
@@ -70,15 +71,15 @@
         </div>
               <div><form method="POST"><button id="vol-down" type="submit" formaction="/voldown/{{song.id}}"><i class="fa fa-volume-down" style="font-size:38px;"></i></button></form></div>
         </div>
-            <input type="range" step="1" class="seekbar" value="0" min="0" max="100" oninput="handleSeekBar()">
+        <input id="progress" type="range" step="1" class="seekbar" value="0" min="0" max="100" >
 
-            <audio class="music-element">
+            <audio class="music-element"  preload="metadata" autoplay controls muted style="display: none;">
                 <source src="../../{{song.path}}" type="audio/mp3">
             </audio>
-            <span class="current-time">{{current_time}}</span><span class="duration">{{song.duration}}</span>
+            <span class="currenttime">{{current_time}}</span><span class="duration">{{song.duration}}</span>
             <div style="justify-content: center;display: flex;">
               <form method="POST">
-                <button id="play" type="submit" formaction="/unpause/{{song.id}}"  ><i class="fa fa-play-circle" style="font-size:38px"></i></button>
+                <button id="play" class="playy" type="submit" formaction="/unpause/{{song.id}}"  ><i class="fa fa-play-circle" style="font-size:38px"></i></button>
                 <button id="pause" type="submit" formaction="/pause/{{song.id}}"><i class="fa fa-pause-circle" style="font-size:38px;"></i></button>
               </form>
             </div>
@@ -88,6 +89,72 @@
 
 </body>
 <script>
+  var music = document.querySelector('.music-element')
+  var duration = document.querySelector('.duration')
+  var seekbar = document.querySelector('.seekbar')
+var currentTime = document.querySelector('.current-time')
+  </script>
+<script>
+  // player
+// var music = document.querySelector('.music-element')
+// console.log("Music:",music)
+var playBtn = document.querySelector('.playy')
+var seekbar = document.querySelector('.seekbar')
+var currentTime = document.querySelector('.currenttime')
+console.log("Current time by flask in js:",currentTime)
+var duration = document.querySelector('.duration')
+console.log("Current time by flask in js:",duration)
+
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+
+var audio = document.querySelector('.music-element')
+var progress = document.getElementById('progress')
+var currentTime = document.querySelector('.currenttime')
+var duration = document.querySelector('.duration')
+
+audio.addEventListener('loadedmetadata', function() {
+    progress.max = audio.duration
+})
+
+audio.addEventListener('timeupdate', function() {
+    progress.value = audio.currentTime
+})
+
+progress.addEventListener('change', function() {
+   var seek = audio.duration * (progress.value / 100)
+   audio.currentTime = seek
+})
+
+progress.addEventListener('input', function() {
+  console.log('woo')
+})
+
+})
+
+
+
+
+music.onloadeddata = function () {
+    seekbar.max = music.duration
+    var ds = parseInt(music.duration % 60)
+    var dm = parseInt((music.duration / 60) % 60)
+    duration.innerHTML = dm + ':' + ds
+}
+music.ontimeupdate = function () { seekbar.value = music.currentTime }
+handleSeekBar = function () { music.currentTime = seekbar.value }
+music.addEventListener('timeupdate', function () {
+    var cs = parseInt(music.currentTime % 60)
+    var cm = parseInt((music.currentTime / 60) % 60)
+    currentTime.innerHTML = cm + ':' + cs
+}, false)
+
+
+
+
+
   function likefunc()
   {
     const cb = document.getElementById('wish1');

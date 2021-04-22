@@ -12,6 +12,7 @@ from pygame import *
 import smtplib
 import imghdr
 from email.message import EmailMessage
+import datetime
 
 app = Flask(__name__)
 
@@ -146,6 +147,8 @@ def login():
 @app.route('/logout')
 @login_required
 def logout():
+    if mixer.get_init():
+        stop()
     logout_user()
     stop()
     flash("Successfully Logged Out")
@@ -165,7 +168,9 @@ def dashboard(song_id):
     song = Songs.query.filter_by(id=song_id).first()
     liked_song = Likes.query.filter_by(
         user_id=current_user.id, song_id=song_id).first()
-    return render_template('dashboard.html', song=song, current_user=current_user, liked_song=liked_song)
+    current_time_sec=mixer.music.get_pos()
+    current_time=int(current_time_sec/1000)
+    return render_template('dashboard.html', song=song, current_user=current_user, liked_song=liked_song,current_time=current_time)
 
 
 @app.route('/allsonglist', methods=['POST', 'GET'])
