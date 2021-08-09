@@ -19,6 +19,7 @@ app = Flask(__name__)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
+login_manager.login_message = "You need to Login first"
 
 app.config['SECRET_KEY'] = os.urandom(24)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///MusicPlayer.db'
@@ -145,13 +146,11 @@ def login():
 
 
 @app.route('/logout')
-@login_required
 def logout():
     if mixer.get_init():
         stop()
     logout_user()
-    stop()
-    flash("Successfully Logged Out")
+    flash("Successfully Logged out!")
     return redirect('/login')
 
 
@@ -159,7 +158,7 @@ def logout():
 def index():
     if mixer.get_init():
         stop()
-    return render_template('home.html')
+    return render_template('home.html', current_user=current_user)
 
 
 @app.route('/dashboard/<song_id>', methods=['POST', 'GET'])
@@ -168,9 +167,11 @@ def dashboard(song_id):
     song = Songs.query.filter_by(id=song_id).first()
     liked_song = Likes.query.filter_by(
         user_id=current_user.id, song_id=song_id).first()
-    current_time_sec=mixer.music.get_pos()
-    current_time=int(current_time_sec/1000)
-    return render_template('dashboard.html', song=song, current_user=current_user, liked_song=liked_song,current_time=current_time)
+
+    current_time_sec = mixer.music.get_pos()
+    current_time = int(current_time_sec/1000)
+
+    return render_template('dashboard.html', song=song, current_user=current_user, liked_song=liked_song, current_time=current_time)
 
 
 @app.route('/allsonglist', methods=['POST', 'GET'])

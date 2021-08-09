@@ -25,7 +25,9 @@
                   <li class="nav-item"><a class="nav-link" href="/likedsonglist"><i class="fa fa-heart"></i> </span>  Liked Songs</a></li>
                   <li class="nav-item"><a class="nav-link" href="/allsonglist"><i class="fa fa-music"></i> </span>  Songs</a></li>
                   <li class="nav-item"><a class="nav-link" href="/search"><i class="fa fa-search"></i> </span>  Search</a></li>
+                  {% if current_user.is_authenticated %}
                   <li class="nav-item"><a class="nav-link" href="/logout"><i class="fa fa-sign-out"></i> </span>  LogOut </a></li>
+                  {% endif %}
                 </ul>
             </div>
             <div>
@@ -41,6 +43,7 @@
   
   <div class="container">
     <div class="row">
+      {% if not current_user.is_authenticated %}
       <div class="col-4">
         <h1>
           Sign In to Listen To Your Favourite Music  Add-Free!
@@ -54,7 +57,14 @@
         </p>
       </form>       
       </div>
+      {% endif %}
+      
+      {% if current_user.is_authenticated %}
+      <div class="col-12">
+      {% else %}
       <div class="col-8">
+      {% endif %} 
+
         <div class="wrapper">
 
   <h2><strong>Features<span></span></strong></h2>
