@@ -37,7 +37,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="D:\Riya\SBL_MusicPlayer\music"
+VIRTUAL_ENV="D:\Riya\Music-Player-\music"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

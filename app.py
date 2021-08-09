@@ -95,18 +95,18 @@ def signup():
             db.session.add(new_user)
             db.session.commit()
 
-            msg = EmailMessage()
-            msg['Subject'] = 'Sucessfully Registered to Music Fiesta!'
-            msg['From'] = EMAIL_ADDRESS
-            msg['To'] = mail_id
-            msg.set_content('Thank you for Registering to Music Fiesta.')
+            # msg = EmailMessage()
+            # msg['Subject'] = 'Sucessfully Registered to Music Fiesta!'
+            # msg['From'] = EMAIL_ADDRESS
+            # msg['To'] = mail_id
+            # msg.set_content('Thank you for Registering to Music Fiesta.')
 
-            f = open("templates/hello.txt", "r")
-            msg.add_alternative(f.read(), subtype='html')
+            # f = open("templates/hello.txt", "r")
+            # msg.add_alternative(f.read(), subtype='html')
 
-            with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-                smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
-                smtp.send_message(msg)
+            # with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+            #     smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+            #     smtp.send_message(msg)
 
             flash("Sucessfully Registered!", "success")
             return redirect('/login')
@@ -244,14 +244,8 @@ def addsongs():
         print(song_file)
         print(cover_file)
 
-        audio = MP3(f"static\Song\song\{song_file}")
-        audio_info = audio.info
-        length_in_secs = int(audio_info.length)
-        hours, mins, seconds = convert(length_in_secs)
-
-        duration = f"{mins}:{seconds}"
-        print(duration)
-
+        
+        duration = "00:00"
         path = f"static\Song\song\{song_file}"
 
         new_song = Songs(path=path, name=songname,
